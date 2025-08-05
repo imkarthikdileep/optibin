@@ -1,4 +1,6 @@
-# Backend: OptiBin AI API
+<img width="804" height="274" alt="cropped" src="https://github.com/user-attachments/assets/bb105cab-9db8-4a6d-9e20-0e52d2e2e968" />
+
+# OptiBin AI 
 
 This is the core logic engine for the OptiBin AI project. It's a lightweight REST API built with Flask (Python) that serves bin data and performs the route optimization calculations.
 
