@@ -1,57 +1,56 @@
 #!/usr/bin/env python3
 """
-Smarter Data Generation Server for OptiBin AI
+Simplified Data Generation Server for OptiBin AI
 
-This server generates random bin locations that are guaranteed to be
-on the landmass of San Francisco, not in the ocean.
+This server generates random bin locations for a landlocked city (Kansas City)
+without needing complex geographic checks.
 """
 import json
 import random
-from shapely.geometry import Point, Polygon
 
-def generate_land_based_bins():
+def generate_landlocked_city_bins():
     """
-    Generates 100 bin locations within the land area of San Francisco.
+    Generates 100 bin locations within a square area representing Kansas City, MO.
     """
-    print("Generating 100 geographically accurate bin locations...")
+    print("Generating 100 bin locations for Kansas City, MO...")
 
-    # A GeoJSON-like polygon defining the landmass of San Francisco.
-    # This prevents bins from being generated in the water.
-    sf_polygon = Polygon([
-        [-122.45, 37.81], [-122.40, 37.81], [-122.39, 37.78],
-        [-122.38, 37.74], [-122.40, 37.70], [-122.43, 37.70],
-        [-122.48, 37.71], [-122.51, 37.74], [-122.52, 37.78],
-        [-122.49, 37.80], [-122.45, 37.81]
-    ])
+    # --- Define the new location: Kansas City, MO ---
+    # Base coordinates (approximate center of the city)
+    base_lat = 39.0997
+    base_lng = -94.5786
 
-    # A simple bounding box to generate initial random points.
-    min_lng, min_lat, max_lng, max_lat = sf_polygon.bounds
+    # Define a simple bounding box (e.g., +/- 0.1 degrees, approx. 14x11 miles)
+    # This creates a rectangular service area without any large bodies of water.
+    lat_range = 0.1
+    lng_range = 0.15 # Make it a bit wider than it is tall for a more realistic shape
+
+    min_lat = base_lat - lat_range
+    max_lat = base_lat + lat_range
+    min_lng = base_lng - lng_range
+    max_lng = base_lng + lng_range
 
     bins = []
-    count = 0
-    while count < 100:
-        # Generate a random point within the bounding box
-        lng = random.uniform(min_lng, max_lng)
+    # Since we are no longer rejecting points, a simple for loop is cleaner.
+    for i in range(1, 101):
+        # Generate a random point within the defined bounding box
         lat = random.uniform(min_lat, max_lat)
-        point = Point(lng, lat)
+        lng = random.uniform(min_lng, max_lng)
 
-        # THE CRITICAL CHECK: Is the point inside the San Francisco polygon?
-        if sf_polygon.contains(point):
-            count += 1
-            fill_level = random.randint(0, 100)
-            bins.append({
-                "id": count,
-                "location": {"lat": lat, "lng": lng},
-                "fill_level": fill_level
-            })
-            print(f"  -> Generated bin #{count} on land.")
+        fill_level = random.randint(0, 100)
+        bins.append({
+            "id": i,
+            "location": {"lat": lat, "lng": lng},
+            "fill_level": fill_level
+        })
+        if i % 10 == 0:
+            print(f"  -> Generated {i} bins...")
 
     # Save the valid bins to a file
     with open('bins.json', 'w') as f:
         json.dump(bins, f, indent=2)
 
-    print("\nSuccessfully generated and saved 100 land-based bins to bins.json.")
-    print("You can now start the main Flask server (`flask --app app run`).")
+    print("\nSuccessfully generated and saved 100 bins for Kansas City to bins.json.")
+    print("You can now start the main Flask server.")
 
 if __name__ == '__main__':
-    generate_land_based_bins()
+    generate_landlocked_city_bins()
