@@ -9,6 +9,7 @@
 .idea/
 static/
 optibin
+__pycache__
 .env
 .env.*
 bins.json
